@@ -9,11 +9,16 @@
 
 using namespace std;
 
+// Initialize static member
+vector<Account*> Account::allAccounts_;
+
 //constructor for username
 Account::Account(const string& username)
 {
     this->username_ = username;
-   
+    this->nFollowers_ = 0;
+    // Add this account to the list of all accounts for trending
+    allAccounts_.push_back(this);
 }
 //constructor for password
 string Account::Make_Password(int length)
@@ -146,6 +151,13 @@ bool Account::follow(const string& username)
     //if not following then initiate follow by putting username in a vector of following and return true
     following_.push_back(username);
     nFollowing_ = following_.size();
+    
+    // Increment the follower count of the followed user
+    Account* followedAccount = find_account(username);
+    if (followedAccount != nullptr) {
+        followedAccount->add_follower();
+    }
+    
     return true;
     
 }
@@ -159,6 +171,13 @@ bool Account::unfollow(const string& username)
         {
             following_.erase(following_.begin() + i);
             nFollowing_ = following_.size();
+            
+            // Decrement the follower count of the unfollowed user
+            Account* unfollowedAccount = find_account(username);
+            if (unfollowedAccount != nullptr) {
+                unfollowedAccount->remove_follower();
+            }
+            
             return true;
         } 
          
@@ -208,7 +227,64 @@ string Account::get_following(const string& key) const
         return oss.str();
 }
 
-   
+//get number of followers
+unsigned Account::get_nfollowers() const
+{
+    return nFollowers_;
+}
+
+//add a follower to this account
+void Account::add_follower()
+{
+    nFollowers_++;
+}
+
+//remove a follower from this account
+void Account::remove_follower()
+{
+    if (nFollowers_ > 0) {
+        nFollowers_--;
+    }
+}
+
+//find an account by username
+Account* Account::find_account(const string& username)
+{
+    for (unsigned i = 0; i < allAccounts_.size(); i++) {
+        if (allAccounts_[i]->get_username() == username) {
+            return allAccounts_[i];
+        }
+    }
+    return nullptr;
+}
+
+//show trending accounts sorted by number of followers
+string Account::show_trending(int limit)
+{
+    ostringstream oss;
+    oss << "=== TRENDING ACCOUNTS ===" << endl;
     
-
-
+    if (allAccounts_.empty()) {
+        oss << "No accounts found." << endl;
+        return oss.str();
+    }
+    
+    // Create a copy of all accounts for sorting
+    vector<Account*> sortedAccounts = allAccounts_;
+    
+    // Sort accounts by number of followers in descending order
+    sort(sortedAccounts.begin(), sortedAccounts.end(), 
+        [](Account* a, Account* b) {
+            return a->get_nfollowers() > b->get_nfollowers();
+        });
+    
+    // Limit to the specified number of trending accounts
+    int count = 0;
+    for (unsigned i = 0; i < sortedAccounts.size() && count < limit; i++) {
+        count++;
+        oss << count << ". " << left << setw(15) << sortedAccounts[i]->get_username() 
+            << " - " << sortedAccounts[i]->get_nfollowers() << " followers" << endl;
+    }
+    
+    return oss.str();
+}
