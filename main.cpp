@@ -95,7 +95,19 @@ using namespace std;
       cout << "Already unfollowed" << endl;
     }
     
-
+    cout << "\n";
+    
+    // Have more users follow accounts to demonstrate trending
+    b.follow(c.get_username());  // Isabella follows Johnny
+    b.follow(i.get_username());  // Isabella follows Lisa
+    c.follow(i.get_username());  // Johnny follows Lisa
+    d.follow(i.get_username());  // Peter follows Lisa
+    e.follow(i.get_username());  // Kevin follows Lisa
+    f.follow(c.get_username());  // Joe follows Johnny
+    g.follow(c.get_username());  // lanier follows Johnny
+    
+    // Show trending accounts (most followed users)
+    cout << Account::show_trending() << endl;
 
     
     return 0;
