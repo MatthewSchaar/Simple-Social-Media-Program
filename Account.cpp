@@ -17,6 +17,7 @@ Account::Account(const string& username)
 {
     this->username_ = username;
     this->nFollowers_ = 0;
+    this->nFollowing_ = 0;
     // Add this account to the list of all accounts for trending
     allAccounts_.push_back(this);
 }

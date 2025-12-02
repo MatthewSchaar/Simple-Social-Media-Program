@@ -14,6 +14,10 @@ class Account {
     unsigned nFollowing_;  //number of people followed by this account
     unsigned nFollowers_;  //number of followers this account has
     static vector<Account*> allAccounts_; //static vector to track all accounts for trending
+    
+    //private helper methods for follower management
+    void add_follower();
+    void remove_follower();
   public:
 
   
@@ -36,8 +40,6 @@ class Account {
     //mutator
     bool follow(const string& username);
     bool unfollow(const string& username);
-    void add_follower();
-    void remove_follower();
     
     //static function for trending
     static string show_trending(int limit = 5);
